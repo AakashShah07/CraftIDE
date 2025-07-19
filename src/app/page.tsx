@@ -1,10 +1,15 @@
-import {prisma} from "@/lib/db";
+"use client";
+// 
+import { useTRPC } from "@/trpc/client"
 
-const Page = async() => {
-  const users = await prisma.user.findMany();
+const Page = () => {
+  
+  const trpc = useTRPC();
+  trpc.createAI.queryOptions({ text: "world" });
+
   return (
-    <div className="font-bold text-rose-500">
-      {JSON.stringify(users, null, 2)}
+    <div >
+      Hello world
     </div>
   )
 }
