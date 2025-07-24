@@ -1,20 +1,30 @@
+// inngest/functions.ts
 import { inngest } from "./client";
+import { createAgent } from "@/lib/deepseek";
 
 export const helloWorld = inngest.createFunction(
   { id: "hello-world" },
   { event: "test/hello.world" },
-  async ({ event, step }) => {
+  async ({ event }) => {
+    try {
+      const input = event.data.value || "Hello world";
 
-    // Imagine this is download step
-    await step.sleep("wait-a-moment", "10s");
+      const agent = createAgent();
+      const response = await agent.ask(`Write the following snippet: ${input}`);
 
-    // Imagine this is a transcript step
-    await step.sleep("wait-a-moment", "4s");
+      console.log("Agent Response:", response);
 
-// Imagine this is summery
-    await step.sleep("wait-a-moment", "4s");
-
-
-    return { message: `Hello ${event.data.email}!` };
-  },
+      return {
+        success: "ok",
+        message: response,
+      };
+    } catch (error) {
+      console.error("Error in helloWorld function:", error);
+      return {
+        success: "error",
+        message: "Failed to get response from DeepSeek",
+        error: error instanceof Error ? error.message : "Unknown error",
+      };
+    }
+  }
 );
