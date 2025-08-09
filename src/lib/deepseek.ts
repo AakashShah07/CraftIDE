@@ -1,3 +1,5 @@
+import { PROMPT } from "@/prompt";
+
 // lib/deepseek.ts
 export const callDeepSeek = async (input: string) => {
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -6,7 +8,7 @@ export const callDeepSeek = async (input: string) => {
       Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}`,
       "Content-Type": "application/json",
       "HTTP-Referer": "http://localhost:3000",
-      "X-Title": "Inngest Summarizer",
+      "X-Title": "Expert coding agent",
     },
     body: JSON.stringify({
       // model: "deepseek/deepseek-r1-0528:free",
@@ -16,7 +18,7 @@ export const callDeepSeek = async (input: string) => {
       messages: [
         {
           role: "user",
-          content: `You are a expert nextJs developer, You write readable, maintainable code. You write simple Next.js & React snippets. ${input}`,
+          content: `${PROMPT} ${input}`,
         },
       ],
     }),
@@ -28,10 +30,30 @@ export const callDeepSeek = async (input: string) => {
 };
 
 // Agent wrapper
-export const createAgent = () => {
+export const createAgent = (tools= [], lifecycle = {}) => {
   return {
-    ask: async (prompt: string) => {
-      return await callDeepSeek(prompt);
+   ask: async (prompt: string) => {
+      const result = await callDeepSeek(prompt);
+      
+      // Create a mock result object that matches AgentResult structure
+      const mockResult = {
+        output: [
+          {
+            role: "assistant",
+            content: result,
+            type: "text"
+          }
+        ]
+      };
+      
+      // Call lifecycle onFinish if provided
+      if (lifecycle.onFinish) {
+        await lifecycle.onFinish({ result: mockResult });
+      }
+      
+      return result;
     },
+    tools,
+    lifecycle
   };
 };
