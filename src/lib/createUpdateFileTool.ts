@@ -1,9 +1,6 @@
 import { z } from "zod";
 import { createTool } from "@inngest/agent-kit";
 import { getSandbox } from "@/inngest/util";
-import { writeFileSync } from "fs";
-import { join, dirname } from "path";
-import { mkdirSync } from "fs";
 
 export const createOrUpdateFile = (sandboxID: string) => {
   return createTool({
@@ -33,11 +30,6 @@ export const createOrUpdateFile = (sandboxID: string) => {
         for (const file of files) {
             console.log(`[createOrUpdateFile] Writing file: ${file.path}`);
 
-          // Ensure the directory exists
-        //   const dir = dirname(file.path);
-        //   mkdirSync(dir, { recursive: true });
-          
-          // Write the file
           await sandbox.files.write(file.path, file.content);
           results.push(file.path);
         }

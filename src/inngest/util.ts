@@ -8,6 +8,12 @@ export async function getSandbox(sandboxId: string) {
 }
 
 export function lastAssistenttextMessageContent(result: AgentResult) {
+
+    if (!result || !Array.isArray(result.output)) {
+    return null; // No valid output
+  }
+
+
     const lastAssistantTextMsgIndex = result.output.findLastIndex(
         (message) => message.role === "assistant"
     )
@@ -15,6 +21,9 @@ export function lastAssistenttextMessageContent(result: AgentResult) {
     const message = result.output[lastAssistantTextMsgIndex] as 
       | TextMessage
       | undefined ;
+
+    if (lastAssistantTextMsgIndex === -1) return null;
+
 
       return message?.content
         ? typeof message.content === "string"
