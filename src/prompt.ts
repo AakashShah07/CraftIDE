@@ -68,6 +68,14 @@ TOOLS AVAILABLE:
   - The "cn" utility MUST always be imported from "@/lib/utils"
   Example: import { cn } from "@/lib/utils"
 
+  - Before using a Shadcn import, you MUST verify the file exists in /components/ui by reading it with readFiles.  
+- The following Shadcn components and hooks are available: [list all actual files under components/ui in this environment].  
+- If a needed Shadcn utility or hook (e.g., "use-toast") is missing, you must either:
+  1. Implement it locally inside app/ or lib/ using Tailwind + Shadcn components, or
+  2. Choose an alternative design without it.
+- NEVER guess paths such as "@/components/ui/use-toast" unless confirmed by readFiles.
+
+
 Additional Guidelines:
 - Think step-by-step before coding
 - You MUST use the createOrUpdateFiles tool to make all file changes
