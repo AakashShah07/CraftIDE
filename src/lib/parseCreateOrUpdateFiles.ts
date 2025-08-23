@@ -1,6 +1,13 @@
 // utils/parseCreateOrUpdateFiles.ts
-export function parseFileUpdatesFromResponse(text: string) {
-  if (!text) return null;
+
+import { lastAssistenttextMessageContent } from "@/inngest/util";
+
+export function parseFileUpdatesFromResponse(input: string | AgentResult) {
+  // normalize to string
+  const text = typeof input === "string" 
+    ? input 
+    : lastAssistenttextMessageContent(input) ?? "";
+
 
   // 1) Try to find a JSON codeblock first (```json ... ```)
   const jsonBlock = text.match(/```json([\s\S]*?)```/i);
@@ -48,8 +55,8 @@ export function parseFileUpdatesFromResponse(text: string) {
   const markerMatch = text.match(/createOrUpdateFiles/i);
   if (markerMatch) {
     // attempt to split into file sections by detecting lines that look like "app/xxx.tsx"
-    // strategy: split text into lines, find filenames, then take subsequent lines until next filename
-    const lines = text.split(/\r?\n/);
+    // strategy: split input into lines, find filenames, then take subsequent lines until next filename
+    const lines = input.split(/\r?\n/);
     const fileSections: { path: string; contentLines: string[] }[] = [];
     let cur: { path: string; contentLines: string[] } | null = null;
 
@@ -85,7 +92,7 @@ export function parseFileUpdatesFromResponse(text: string) {
   const codeBlockRegex = /(^[\t ]*([^\n`]+)\n```(?:[\w+]*)\n([\s\S]*?)```)/gm;
   const files: { path: string; content: string }[] = [];
   let match;
-  while ((match = codeBlockRegex.exec(text)) !== null) {
+  while ((match = codeBlockRegex.exec(input)) !== null) {
     const possibleName = match[2].trim();
     const body = match[3];
     if (/^[\w\-./]+\.(ts|tsx|js|jsx|json|css|mdx?)$/.test(possibleName)) {
