@@ -24,6 +24,11 @@ export function lastAssistenttextMessageContent(result: AgentResult) {
 
     if (lastAssistantTextMsgIndex === -1) return null;
 
+    console.log("utils msg is ",message?.content
+        ? typeof message.content === "string"
+        ?message.content
+        : message?.content.map((c) => c.text).join("")
+        : undefined);
 
       return message?.content
         ? typeof message.content === "string"

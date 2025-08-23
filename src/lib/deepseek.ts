@@ -1,7 +1,9 @@
 import { PROMPT } from "@/prompt";
+import { AgentResult } from "@inngest/agent-kit";
 
 // lib/deepseek.ts
 export const callDeepSeek = async (input: string) => {
+  console.log("Going to call the api")
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -23,6 +25,7 @@ export const callDeepSeek = async (input: string) => {
       ],
     }),
   });
+  // console.log("Going to call the api")
 
   const json = await res.json();
   console.log("DeepSeek Response:", json);
@@ -36,7 +39,7 @@ export const createAgent = (tools= [], lifecycle = {}) => {
       const result = await callDeepSeek(prompt);
       
       // Create a mock result object that matches AgentResult structure
-      const mockResult = {
+      const mockResult: AgentResult = {
         output: [
           {
             role: "assistant",
@@ -51,7 +54,7 @@ export const createAgent = (tools= [], lifecycle = {}) => {
         await lifecycle.onFinish({ result: mockResult });
       }
       
-      return result;
+      return mockResult;
     },
     tools,
     lifecycle
