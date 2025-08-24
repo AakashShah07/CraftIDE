@@ -13,9 +13,9 @@ export const callDeepSeek = async (input: string) => {
       "X-Title": "Expert coding agent",
     },
     body: JSON.stringify({
-      // model: "deepseek/deepseek-r1-0528:free",
+      model: "deepseek/deepseek-r1-0528:free",
       // model: "qwen/qwq-32b:free",
-      "model": "deepseek/deepseek-chat-v3-0324:free",
+      // "model": "deepseek/deepseek-chat-v3-0324:free",
 
       messages: [
         {
