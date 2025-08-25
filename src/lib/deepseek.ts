@@ -4,6 +4,10 @@ import { AgentResult } from "@inngest/agent-kit";
 // lib/deepseek.ts
 export const callDeepSeek = async (input: string) => {
   console.log("Going to call the api")
+  // console.log(process.env.DEEPSEEK_API_KEY)
+    const maxRetries = 3;
+
+ for (let attempt = 0; attempt < maxRetries; attempt++) {
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -13,9 +17,9 @@ export const callDeepSeek = async (input: string) => {
       "X-Title": "Expert coding agent",
     },
     body: JSON.stringify({
-      model: "deepseek/deepseek-r1-0528:free",
+      // model: "deepseek/deepseek-r1-0528:free",
       // model: "qwen/qwq-32b:free",
-      // "model": "deepseek/deepseek-chat-v3-0324:free",
+      "model": "deepseek/deepseek-chat-v3-0324:free",
 
       messages: [
         {
@@ -25,13 +29,19 @@ export const callDeepSeek = async (input: string) => {
       ],
     }),
   });
+   if (res.status === 429) {
+      const waitTime = (attempt + 1) * 2000; // 2s, 4s, 6s
+      console.warn(`Rate limited. Retrying in ${waitTime}ms...`);
+      await new Promise(r => setTimeout(r, waitTime));
+      continue;
+    }
   // console.log("Going to call the api")
 
   const json = await res.json();
   console.log("DeepSeek Response:", json);
   return json?.choices?.[0]?.message?.content ?? "No response from DeepSeek";
 };
-
+}
 // Agent wrapper
 export const createAgent = (tools= [], lifecycle = {}) => {
   return {
