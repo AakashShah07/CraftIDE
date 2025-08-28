@@ -30,7 +30,7 @@ export const callDeepSeek = async (input: string) => {
     }),
   });
    if (res.status === 429) {
-      const waitTime = (attempt + 1) * 2000; // 2s, 4s, 6s
+      const waitTime = (attempt + 1) * 3000; // 2s, 4s, 6s
       console.warn(`Rate limited. Retrying in ${waitTime}ms...`);
       await new Promise(r => setTimeout(r, waitTime));
       continue;
