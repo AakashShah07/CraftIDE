@@ -20,25 +20,33 @@ const MessageContainer = ({
 }: Props) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const trpc = useTRPC();
+
+  const lastAssistantMessageRef = useRef<string | null>(null);
+
   const { data: messages } = useSuspenseQuery(
     trpc.messages.getMany.queryOptions({
       projectId: projectId,
     },{
-      // TODO Temporary fix for new messages not showing up
       refetchInterval:5000,
     })
   );
 
-  // TODO: This is causing issues with fragment selection
-  // useEffect(() => {
-  //   // bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  //   const lastAssistantMsgWithFragment = messages.findLast(
-  //     (message) => message.role === "ASSISTANT" && !!message.fragment
-  //   );
-  //   if (lastAssistantMsgWithFragment) {
-  //     setActiveFragment(lastAssistantMsgWithFragment.fragment);
-  //   }
-  // }, [messages, setActiveFragment]);
+  useEffect(() => {
+    // bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    const lastAssistantMsg = messages.findLast(
+      (message) => message.role ==="ASSISTANT"
+    );
+
+    if (
+      lastAssistantMsg &&
+      lastAssistantMsg.fragment &&
+      lastAssistantMsg.id !== lastAssistantMessageRef.current
+    ) {
+      setActiveFragment(lastAssistantMsg.fragment);
+      lastAssistantMessageRef.current = lastAssistantMsg.id ;
+    }
+
+  }, [messages, setActiveFragment]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
